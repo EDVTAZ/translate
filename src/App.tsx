@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { getAllTranslations, getTranslation } from "./get-translations";
+import { getAllTranslations } from "./get-translations";
 import "./App.css";
 import { useCookies } from "./useCookies";
 import { useEffect } from "react";
@@ -48,15 +48,16 @@ function App() {
             <div>
               <input
                 onKeyDown={(ev) => {
-                  if (ev.key == "Enter")
+                  if (ev.key == "Enter") {
                     getAllTranslations(
-                      ev.target.value,
+                      (ev.target as HTMLInputElement).value,
                       language,
                       languages,
                       APIkey
                     ).then((result) => {
                       setTranslations(result);
                     });
+                  }
                 }}
               />
             </div>
