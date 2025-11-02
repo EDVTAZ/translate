@@ -1,27 +1,24 @@
 import { useState } from "react";
 import { getAllTranslations } from "./get-translations";
 import "./App.css";
-import { useCookies } from "./useCookies";
-import { useEffect } from "react";
+import { useCookie } from "./useCookies";
 
 function App() {
-  const [APIkey, setAPIkey] = useState("");
-  const [languages, setLangues] = useState<string[]>([]);
+  const [APIkey, setAPIkey] = useCookie(
+    "APIkey",
+    "",
+    (v) => v,
+    (v) => v
+  );
+  const [languages, setLangues] = useCookie<string[]>(
+    "languages",
+    [],
+    (v) => v.split(","),
+    (v) => v.join(",")
+  );
   const [translations, setTranslations] = useState<{ [key: string]: string[] }>(
     {}
   );
-
-  useCookies(setAPIkey, setLangues);
-  useEffect(() => {
-    if (APIkey) {
-      document.cookie = `APIkey=${APIkey}; path=/`;
-    }
-  }, [APIkey]);
-  useEffect(() => {
-    if (languages) {
-      document.cookie = `languages=${languages}; path=/`;
-    }
-  }, [languages]);
 
   return (
     <>

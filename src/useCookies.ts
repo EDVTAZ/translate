@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 function getCookie(name: string) {
   const match = document.cookie
@@ -9,15 +9,28 @@ function getCookie(name: string) {
     : undefined;
 }
 
-export function useCookies(
-  setAPIkey: React.Dispatch<React.SetStateAction<string>>,
-  setLanguages: React.Dispatch<React.SetStateAction<string[]>>
-) {
-  useEffect(() => {
-    const ckApi = getCookie("APIkey");
-    const ckLang = getCookie("languages");
+export function useCookie<T>(
+  name: string,
+  initial: T,
+  parse: (cookie: string) => T,
+  serialize: (value: T) => string
+): [T, React.Dispatch<T>] {
+  const [cookieValue, setCookieValue] = useState(initial);
 
-    if (ckApi) setAPIkey(ckApi);
-    if (ckLang) setLanguages(ckLang.split(","));
+  useEffect(() => {
+    const freshCookieValue = getCookie(name);
+    if (freshCookieValue) {
+      setCookieValue(parse(freshCookieValue));
+    }
   }, []);
+
+  function updateValue(value: T) {
+    const serialized = serialize(value);
+    if (serialized) {
+      document.cookie = `${name}=${serialized}; path=/`;
+      setCookieValue(value);
+    }
+  }
+
+  return [cookieValue, updateValue];
 }
