@@ -21,6 +21,7 @@ function App() {
   );
   const [showAPIkey, setShowAPIkey] = useState(false);
   const [showLanguages, setShowLanguages] = useState(false);
+  const [activeLanguage, setActiveLanguage] = useState("");
 
   return (
     <>
@@ -50,30 +51,36 @@ function App() {
       </div>
       {languages.map((language) => {
         return (
-          <div key={language} className="card">
-            <div>{language}</div>
-            <div>
-              <input
-                onKeyDown={(ev) => {
-                  if (ev.key == "Enter") {
-                    getAllTranslations(
-                      (ev.target as HTMLInputElement).value,
-                      language,
-                      languages,
-                      APIkey
-                    ).then((result) => {
-                      setTranslations(result);
-                    });
-                  }
-                }}
-              />
+          <>
+            <div onClick={() => setActiveLanguage(language)} key={language}>
+              <div>{language}</div>
+              {language == activeLanguage && (
+                <div>
+                  <input
+                    onKeyDown={(ev) => {
+                      if (ev.key == "Enter") {
+                        setActiveLanguage("");
+                        getAllTranslations(
+                          (ev.target as HTMLInputElement).value,
+                          language,
+                          languages,
+                          APIkey
+                        ).then((result) => {
+                          setTranslations(result);
+                        });
+                      }
+                    }}
+                  />
+                </div>
+              )}
+              <div>
+                {translations[language]?.map((translation, i) => (
+                  <div key={`${language}-${i}-translation`}>{translation}</div>
+                ))}
+              </div>
             </div>
-            <div>
-              {translations[language]?.map((translation) => (
-                <div key={`${language}-translation`}>{translation}</div>
-              ))}
-            </div>
-          </div>
+            <hr />
+          </>
         );
       })}
     </>
