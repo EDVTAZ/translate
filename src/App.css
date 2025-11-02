@@ -1,8 +1,10 @@
 #root {
-  max-width: 1280px;
-  margin: 0 auto;
+  margin: 0;
   padding: 2rem;
   text-align: center;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
 }
 
 .logo {
@@ -39,4 +41,39 @@
 
 .read-the-docs {
   color: #888;
+}
+
+/* Layout for language rows: translations, language name and input side-by-side */
+.language-item {
+  width: 100%;
+  box-sizing: border-box;
+  margin: 0.5rem 0;
+}
+.language-row {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 1rem;
+  justify-content: space-between;
+}
+.language-row .translations {
+  text-align: left;
+}
+.language-row .language-name {
+  flex: 0 0 auto;
+  font-weight: 600;
+  padding: 0.4rem 0.5rem;
+  text-align: center;
+}
+.language-row .language-input {
+  flex: 1 1 40%;
+}
+.language-row .language-input input {
+  width: 100%;
+  padding: 0.4rem 0.5rem;
+  box-sizing: border-box;
+}
+
+hr {
+  margin: 0.5rem 0;
 }

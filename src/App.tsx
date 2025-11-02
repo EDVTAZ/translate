@@ -49,40 +49,47 @@ function App() {
           </div>
         )}
       </div>
-      {languages.map((language) => {
-        return (
-          <>
-            <div onClick={() => setActiveLanguage(language)} key={language}>
-              <div>{language}</div>
-              {language == activeLanguage && (
-                <div>
-                  <input
-                    onKeyDown={(ev) => {
-                      if (ev.key == "Enter") {
-                        setActiveLanguage("");
-                        getAllTranslations(
-                          (ev.target as HTMLInputElement).value,
-                          language,
-                          languages,
-                          APIkey
-                        ).then((result) => {
-                          setTranslations(result);
-                        });
-                      }
-                    }}
-                  />
-                </div>
-              )}
-              <div>
+      <hr />
+      {languages.map((language) => (
+        <div
+          className="language-item"
+          onClick={() => setActiveLanguage(language)}
+          key={language}
+        >
+          <div className="language-row">
+            {language !== activeLanguage && (
+              <div className="translations">
                 {translations[language]?.map((translation, i) => (
                   <div key={`${language}-${i}-translation`}>{translation}</div>
                 ))}
               </div>
-            </div>
-            <hr />
-          </>
-        );
-      })}
+            )}
+
+            {language === activeLanguage && (
+              <div className="language-input">
+                <input
+                  autoFocus
+                  onKeyDown={(ev) => {
+                    if (ev.key === "Enter") {
+                      setActiveLanguage("");
+                      getAllTranslations(
+                        (ev.target as HTMLInputElement).value,
+                        language,
+                        languages,
+                        APIkey
+                      ).then((result) => {
+                        setTranslations(result);
+                      });
+                    }
+                  }}
+                />
+              </div>
+            )}
+            <div className="language-name">{language}</div>
+          </div>
+          <hr />
+        </div>
+      ))}
     </>
   );
 }
