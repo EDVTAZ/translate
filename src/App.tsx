@@ -1,52 +1,53 @@
-import { useState } from "react";
-import { getAllTranslations } from "./get-translations";
+import { useEffect, useState } from "react";
+import { getAllTranslations, loadTranslators } from "./get-translations";
 import "./App.css";
 import { useCookie } from "./useCookies";
 
 function App() {
-  const [APIkey, setAPIkey] = useCookie(
-    "APIkey",
-    "",
-    (v) => v,
-    (v) => v
-  );
   const [languages, setLangues] = useCookie<string[]>(
     "languages",
     [],
     (v) => v.split(","),
     (v) => v.join(",")
   );
-  const [translations, setTranslations] = useState<{ [key: string]: string[] }>(
+  const [translations, setTranslations] = useState<{ [key: string]: string }>(
     {}
   );
-  const [showAPIkey, setShowAPIkey] = useState(false);
-  const [showLanguages, setShowLanguages] = useState(false);
   const [activeLanguage, setActiveLanguage] = useState("");
+  const [downloadProgress, setDownloadProgress] = useState(
+    "Translators loaded!"
+  );
+  const [needsUserActivation, setNeedsUserActivation] = useState(0);
 
-  return (
+  useEffect(() => {
+    loadTranslators(languages, setDownloadProgress, setNeedsUserActivation);
+  }, [languages.join()]);
+
+  return "Translator" in self ? (
     <>
       <div className="card">
-        <button onClick={() => setShowAPIkey(!showAPIkey)}>Set API key</button>
-        <button onClick={() => setShowLanguages(!showLanguages)}>
-          Set languages
-        </button>
-        {showAPIkey && (
-          <div>
-            API key:
-            <input
-              defaultValue={APIkey}
-              onChange={(ev) => setAPIkey(ev.target.value)}
-            ></input>
-          </div>
-        )}
-        {showLanguages && (
-          <div>
-            Languages:
-            <input
-              defaultValue={languages}
-              onChange={(ev) => setLangues(ev.target.value.split(","))}
-            ></input>
-          </div>
+        <div>
+          Languages:
+          <input
+            defaultValue={languages}
+            onChange={(ev) => setLangues(ev.target.value.split(","))}
+          ></input>
+        </div>
+        {needsUserActivation ? (
+          <button
+            onClick={() => {
+              setNeedsUserActivation(0);
+              loadTranslators(
+                languages,
+                setDownloadProgress,
+                setNeedsUserActivation
+              );
+            }}
+          >
+            Load translators! ({needsUserActivation} missing)
+          </button>
+        ) : (
+          <div>{downloadProgress}</div>
         )}
       </div>
       <hr />
@@ -58,14 +59,10 @@ function App() {
         >
           <div className="language-row">
             {language !== activeLanguage && (
-              <div className="translations">
-                {translations[language]?.map((translation, i) => (
-                  <div key={`${language}-${i}-translation`}>{translation}</div>
-                ))}
-              </div>
+              <div className="translations">{translations[language]}</div>
             )}
 
-            {language === activeLanguage && (
+            {language === activeLanguage && language && (
               <div className="language-input">
                 <input
                   autoFocus
@@ -75,8 +72,7 @@ function App() {
                       getAllTranslations(
                         (ev.target as HTMLInputElement).value,
                         language,
-                        languages,
-                        APIkey
+                        languages
                       ).then((result) => {
                         setTranslations(result);
                       });
@@ -91,6 +87,8 @@ function App() {
         </div>
       ))}
     </>
+  ) : (
+    <div>Chrome Translator API not available!</div>
   );
 }
 
