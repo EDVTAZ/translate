@@ -19,24 +19,34 @@ function App() {
   const [translations, setTranslations] = useState<{ [key: string]: string[] }>(
     {}
   );
+  const [showAPIkey, setShowAPIkey] = useState(false);
+  const [showLanguages, setShowLanguages] = useState(false);
 
   return (
     <>
       <div className="card">
-        <div>
-          <p>API key: </p>
-          <input
-            defaultValue={APIkey}
-            onChange={(ev) => setAPIkey(ev.target.value)}
-          ></input>
-        </div>
-        <div>
-          <p>Languages: </p>
-          <input
-            defaultValue={languages}
-            onChange={(ev) => setLangues(ev.target.value.split(","))}
-          ></input>
-        </div>
+        <button onClick={() => setShowAPIkey(!showAPIkey)}>Set API key</button>
+        <button onClick={() => setShowLanguages(!showLanguages)}>
+          Set languages
+        </button>
+        {showAPIkey && (
+          <div>
+            API key:
+            <input
+              defaultValue={APIkey}
+              onChange={(ev) => setAPIkey(ev.target.value)}
+            ></input>
+          </div>
+        )}
+        {showLanguages && (
+          <div>
+            Languages:
+            <input
+              defaultValue={languages}
+              onChange={(ev) => setLangues(ev.target.value.split(","))}
+            ></input>
+          </div>
+        )}
       </div>
       {languages.map((language) => {
         return (
