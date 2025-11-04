@@ -2,9 +2,10 @@ import { useEffect, useState } from "react";
 import { getAllTranslations, loadTranslators } from "./get-translations";
 import "./App.css";
 import { useCookie } from "./useCookies";
+import { validBCP47 } from "./language-tags";
 
 function App() {
-  const [languages, setLangues] = useCookie<string[]>(
+  const [languages, setLanguages] = useCookie<string[]>(
     "languages",
     [],
     (v) => v.split(","),
@@ -30,7 +31,9 @@ function App() {
           Languages:
           <input
             defaultValue={languages}
-            onChange={(ev) => setLangues(ev.target.value.split(","))}
+            onChange={(ev) =>
+              setLanguages(ev.target.value.split(",").filter(validBCP47))
+            }
           ></input>
         </div>
         {needsUserActivation ? (
