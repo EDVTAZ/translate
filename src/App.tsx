@@ -69,13 +69,17 @@ function App() {
                   onKeyDown={(ev) => {
                     if (ev.key === "Enter") {
                       setActiveLanguage("");
-                      getAllTranslations(
-                        (ev.target as HTMLInputElement).value,
-                        language,
-                        languages
-                      ).then((result) => {
-                        setTranslations(result);
-                      });
+                      const toTranslate = (ev.target as HTMLInputElement).value;
+                      const newTranslations = Object.fromEntries(
+                        languages.map((v) => [v, ""])
+                      );
+                      newTranslations[language] = toTranslate;
+                      setTranslations(newTranslations);
+                      getAllTranslations(toTranslate, language, languages).then(
+                        (result) => {
+                          setTranslations(result);
+                        }
+                      );
                     }
                   }}
                 />
