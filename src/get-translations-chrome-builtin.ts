@@ -62,7 +62,7 @@ export async function loadTranslator(
   }
 }
 
-export async function loadTranslators(
+export async function loadChromeTranslators(
   languages: string[],
   progressCallback: (status: string) => void,
   setNeedsUserActivation: (state: number) => void
@@ -89,7 +89,7 @@ export async function loadTranslators(
   return translators;
 }
 
-export async function getTranslation(
+async function getTranslation(
   text: string,
   from: string,
   to: string

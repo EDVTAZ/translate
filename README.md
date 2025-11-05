@@ -4,7 +4,7 @@ Check translations from and to multiple languages at the same time. Useful if yo
 
 Current limitations:
 
-- Only works on desktop Chrome and Opera
+- The chrome built-in AI only works on desktop Chrome and Opera, for other browsers an LLM is used with huggingface, which is slower and lower quality.
 - Because transient activation is needed, you might have to click a button a few times to load all translator models.
 
 ![](gifs/translate.gif)

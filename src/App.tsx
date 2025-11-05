@@ -1,8 +1,12 @@
 import { useEffect, useState } from "react";
-import { getAllTranslations, loadTranslators } from "./get-translations";
+import {
+  getAllTranslations,
+  loadChromeTranslators,
+} from "./get-translations-chrome-builtin";
 import "./App.css";
 import { useCookie } from "./useCookies";
 import { validBCP47 } from "./language-tags";
+import { useHFTranslateWorker } from "./use-hf-translate-worker";
 
 function App() {
   const [languages, setLanguages] = useCookie<string[]>(
@@ -19,12 +23,22 @@ function App() {
     "Translators loaded!"
   );
   const [needsUserActivation, setNeedsUserActivation] = useState(0);
+  const llmTranslate = useHFTranslateWorker(
+    setTranslations,
+    setDownloadProgress
+  );
 
   useEffect(() => {
-    loadTranslators(languages, setDownloadProgress, setNeedsUserActivation);
+    if ("Translator" in self) {
+      loadChromeTranslators(
+        languages,
+        setDownloadProgress,
+        setNeedsUserActivation
+      );
+    }
   }, [languages.join()]);
 
-  return "Translator" in self ? (
+  return (
     <>
       <div className="card">
         <div>
@@ -40,7 +54,7 @@ function App() {
           <button
             onClick={() => {
               setNeedsUserActivation(0);
-              loadTranslators(
+              loadChromeTranslators(
                 languages,
                 setDownloadProgress,
                 setNeedsUserActivation
@@ -78,11 +92,21 @@ function App() {
                       );
                       newTranslations[language] = toTranslate;
                       setTranslations(newTranslations);
-                      getAllTranslations(toTranslate, language, languages).then(
-                        (result) => {
+                      if ("Translator" in self) {
+                        getAllTranslations(
+                          toTranslate,
+                          language,
+                          languages
+                        ).then((result) => {
                           setTranslations(result);
-                        }
-                      );
+                        });
+                      } else {
+                        languages
+                          .filter((value) => language != value)
+                          .forEach((targetl) =>
+                            llmTranslate(toTranslate, language, targetl)
+                          );
+                      }
                     }
                   }}
                 />
@@ -94,8 +118,6 @@ function App() {
         </div>
       ))}
     </>
-  ) : (
-    <div>Chrome Translator API not available!</div>
   );
 }
 
